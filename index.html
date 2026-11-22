@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GLB to STL Converter</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/site.css">
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/addons/"}}</script>
+<script type="module" src="assets/js/glb2stl.js"></script>
+</head>
+<body class="home">
+<main id="main">
+<section class="hero" aria-labelledby="h1">
+<h1 id="h1">GLB to STL converter</h1>
+<p class="lede">Convert a .glb or .gltf model into a printable STL or a plain OBJ. The file is parsed with the three.js glTF loader (Draco and meshopt compression included), turned Z-up, scaled from meters to millimeters and set on the build plate, all inside your browser. No GLB yet? FurniMesh's <a href="https://furnimesh.com/image-to-3d?utm_source=github-glb-to-stl-converter&amp;utm_medium=referral&amp;utm_campaign=best-network" rel="noopener">image to 3D generator</a>, made by the same team, builds one from a photo of a furniture piece.</p>
+</section>
+<div class="tool" id="tool">
+<div class="stage" id="stage">
+<canvas id="view" aria-label="3D preview of the loaded model. Drag to orbit, scroll to zoom."></canvas>
+<div class="viewtog" role="group" aria-label="Preview mode">
+<button type="button" id="view-tex" aria-pressed="true">Textured</button>
+<button type="button" id="view-stl" aria-pressed="false">As STL</button>
+</div>
+<div class="drop" id="drop">
+<p class="big">Drop a .glb or .gltf file here</p>
+<p>For a .gltf with a separate .bin and textures, select all of its files together. Draco and meshopt compression are supported.</p>
+<label class="filebtn"><input type="file" id="file" accept=".glb,.gltf,.bin,.png,.jpg,.jpeg,.webp,.ktx2" multiple><span>Choose file</span></label>
+<span class="or">or</span>
+<button type="button" class="ghost" id="sample">Try a sample chair</button>
+</div>
+<noscript><p class="drop">This converter needs JavaScript and WebGL. Everything runs locally, so nothing is sent to a server.</p></noscript>
+</div>
+<div class="panel" aria-label="Model stats and export options">
+<div><h2>Model</h2><dl class="mono" id="stats"><dt>status</dt><dd>no model loaded</dd></dl></div>
+<fieldset><legend>Units and scale</legend>
+<label class="opt"><input type="radio" name="unit" value="mm" checked><span>Meters to millimeters (x1000)<small>glTF is in meters; slicers read STL as mm. Right for most models.</small></span></label>
+<label class="opt"><input type="radio" name="unit" value="fit"><span>Fit longest side to a size<small>Good for miniatures and models with odd scale.</small></span></label>
+<span class="target"><label for="target">longest side</label><input type="number" id="target" value="100" min="0.1" step="any" inputmode="decimal" disabled> mm</span>
+<label class="opt"><input type="radio" name="unit" value="none"><span>Keep numbers as they are (x1)<small>Use when the file was already modeled in mm.</small></span></label>
+</fieldset>
+<fieldset><legend>Geometry</legend>
+<label class="opt"><input type="checkbox" id="merge" checked><span>Merge meshes into one STL<small>Off: one STL per mesh, packed in a .zip.</small></span></label>
+<label class="opt"><input type="checkbox" id="xform" checked><span>Apply node transforms<small>Bakes each node's position, rotation and scale into the vertices.</small></span></label>
+<label class="opt"><input type="checkbox" id="zup" checked><span>Rotate Y-up to Z-up<small>glTF stands models on Y; printers build along Z.</small></span></label>
+<label class="opt"><input type="checkbox" id="floor" checked><span>Center and place on the build plate<small>Puts the lowest point at zero and centers the model.</small></span></label>
+</fieldset>
+<fieldset><legend>STL format</legend>
+<div class="row2">
+<label class="opt"><input type="radio" name="fmt" value="binary" checked><span>Binary<small>Small, 50 bytes per triangle</small></span></label>
+<label class="opt"><input type="radio" name="fmt" value="ascii"><span>ASCII<small>Readable text, about 5x larger</small></span></label>
+</div>
+</fieldset>
+<div><h2>Output</h2><dl class="mono" id="outstats"><dt>status</dt><dd>load a model to see the result</dd></dl></div>
+<p class="scalewarn" id="scalewarn" hidden></p>
+<div class="go">
+<button type="button" id="dl-stl" disabled>Download STL</button>
+<button type="button" id="dl-obj" disabled>Download OBJ</button>
+</div>
+<p class="msg" id="msg" role="status" aria-live="polite">Loading the converter...</p>
+<p class="note"><span class="privacy-pill">&#9679; runs locally</span> STL stores triangles only. Textures, colors and materials are dropped; the OBJ export is geometry only too. <button type="button" class="ghost" id="reset" style="padding:3px 9px;font-size:12.5px">Start over</button></p>
+</div>
+</div>
+</main>
+<footer style="max-width:1100px;margin:32px auto 24px;padding:0 16px;font-size:14px;opacity:.8">
+<p>Live version: <a href="https://glbtostlconverter.com/">https://glbtostlconverter.com/</a> &middot; Made by the FurniMesh team (furnimesh.com)</p>
+</footer>
+</body>
+</html>
